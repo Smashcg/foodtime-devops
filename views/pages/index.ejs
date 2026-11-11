@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <%- include('../layouts/head'); %>
+</head>
+<body class="container">
+    <header>
+        <%- include('../layouts/header'); %>
+    </header>
+
+    <main>
+        <div class="jumbotron">
+            <h1 class="display-4 font-weight-bold">Bem-vindo ao FoodTime!</h1>
+            <p class="lead">Aplicação de demonstração e integração prática da disciplina <strong>DevOps na Prática</strong>.</p>
+            <hr class="my-4">
+            <p>Esta instância está atualmente rodando no host: <code><%= hostname %></code>.</p>
+            
+            <div class="row mt-4">
+                <div class="col-md-4">
+                    <div class="card p-3 mb-3">
+                        <h5>🚀 Integração Contínua</h5>
+                        <p class="text-muted small">Pipelines automatizados via GitHub Actions com validação de código, linting e cobertura de testes.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card p-3 mb-3">
+                        <h5>☁️ Infraestrutura como Código</h5>
+                        <p class="text-muted small">Recursos na nuvem AWS declarados e versionados com Terraform e AWS CloudFormation.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card p-3 mb-3">
+                        <h5>📊 Observabilidade</h5>
+                        <p class="text-muted small">Métricas nativas expostas via Prometheus client e monitoramento integrado via CloudWatch.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <%- include('../layouts/footer'); %>
+</body>
+</html>
+

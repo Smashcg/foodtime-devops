@@ -1,0 +1,72 @@
+name: CI - Continuous Integration Pipeline
+
+on:
+  push:
+    branches:
+      - main
+      - master
+      - develop
+  pull_request:
+    branches:
+      - main
+      - master
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Build & Testes Automatizados (Node.js)
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [20.x]
+
+    steps:
+      - name: 📥 Checkout do Repositório
+        uses: actions/checkout@v4
+
+      - name: ⚙️ Configuração do Ambiente Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+
+      - name: 📦 Instalação Limpa de Dependências
+        run: npm ci
+
+      - name: 🧪 Execução dos Testes Automatizados com Cobertura (Jest)
+        run: npm run test:coverage
+
+      - name: 📊 Publicação do Relatório de Cobertura como Artefato
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage/
+          retention-days: 14
+
+  iac-validation:
+    name: Validação de Infraestrutura como Código (Terraform)
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📥 Checkout do Repositório
+        uses: actions/checkout@v4
+
+      - name: 🛠️ Setup do Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.8.0
+
+      - name: 🔍 Verificação de Formatação (terraform fmt)
+        working-directory: ./infra/terraform
+        run: terraform fmt -check
+
+      - name: 🚀 Inicialização do Terraform (sem backend remoto)
+        working-directory: ./infra/terraform
+        run: terraform init -backend=false
+
+      - name: ✅ Validação da Sintaxe e Recursos (terraform validate)
+        working-directory: ./infra/terraform
+        run: terraform validate

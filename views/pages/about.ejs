@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <%- include('../layouts/head'); %>
+</head>
+<body class="container">
+    <header>
+        <%- include('../layouts/header'); %>
+    </header>
+
+    <main>
+        <div class="jumbotron">
+            <h2>Sobre a Arquitetura do FoodTime</h2>
+            <p>O FoodTime é um ecossistema projetado para demonstrar os pilares essenciais da cultura DevOps:</p>
+            <ul>
+                <li><strong>Colaboração e Agilidade:</strong> Controle de versão com Git e fluxo estruturado de branches.</li>
+                <li><strong>Automação de CI:</strong> Validação a cada commit ou pull request no GitHub.</li>
+                <li><strong>Infraestrutura Imutável:</strong> Provisionamento reprodutível e idempotente com Terraform.</li>
+                <li><strong>Feedback Rápido:</strong> Detecção antecipada de bugs através de testes automatizados com Jest.</li>
+            </ul>
+
+            <h4 class="mt-4">Endpoints da API</h4>
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped mt-2">
+                    <thead class="thead-light">
+                        <tr>
+                            <th>Método</th>
+                            <th>Rota</th>
+                            <th>Descrição</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>GET</td><td><code>/</code></td><td>Healthcheck inicial da API (JSON)</td></tr>
+                        <tr><td>GET</td><td><code>/health</code></td><td>Status operacional do processo e uptime</td></tr>
+                        <tr><td>GET</td><td><code>/api/orders</code></td><td>Listagem simulada de pedidos</td></tr>
+                        <tr><td>GET</td><td><code>/metrics</code></td><td>Métricas no padrão OpenMetrics / Prometheus</td></tr>
+                        <tr><td>GET</td><td><code>/index</code></td><td>Página web inicial</td></tr>
+                        <tr><td>GET</td><td><code>/about</code></td><td>Página sobre o projeto</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <%- include('../layouts/footer'); %>
+</body>
+</html>
+

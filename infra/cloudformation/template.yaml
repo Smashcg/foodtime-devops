@@ -1,0 +1,146 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: >
+  Stack CloudFormation para o FoodTime DevOps (Fase 1 - DevOps na Pratica PUC).
+  Provisiona Bucket S3 com criptografia e versionamento, Security Group para portas 80, 3000 e 22,
+  instancia EC2 para execucao da aplicacao e alarme de monitoramento CloudWatch.
+
+Parameters:
+  ProjectName:
+    Type: String
+    Default: foodtime
+    Description: Nome base do projeto para tags e recursos.
+
+  Environment:
+    Type: String
+    Default: dev
+    AllowedValues: [dev, staging, prod]
+    Description: Ambiente de implantacao.
+
+  InstanceType:
+    Type: String
+    Default: t2.micro
+    Description: Tipo da instancia EC2 compativel com AWS Academy.
+
+  AppPort:
+    Type: Number
+    Default: 3000
+    Description: Porta TCP da aplicacao FoodTime.
+
+Resources:
+  # ----------------------------------------------------------------------------
+  # 1. Bucket S3 com Versionamento e Criptografia
+  # ----------------------------------------------------------------------------
+  FoodTimeArtifactsBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      VersioningConfiguration:
+        Status: Enabled
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      Tags:
+        - Key: Project
+          Value: !Ref ProjectName
+        - Key: Environment
+          Value: !Ref Environment
+        - Key: ManagedBy
+          Value: CloudFormation
+
+  # ----------------------------------------------------------------------------
+  # 2. Security Group para Web, App e Acesso Remoto
+  # ----------------------------------------------------------------------------
+  FoodTimeSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Security Group para o aplicativo FoodTime
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+          Description: Acesso HTTP Web
+        - IpProtocol: tcp
+          FromPort: !Ref AppPort
+          ToPort: !Ref AppPort
+          CidrIp: 0.0.0.0/0
+          Description: Acesso a API e metricas Node.js
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
+          Description: Acesso SSH administrativo
+      Tags:
+        - Key: Name
+          Value: !Sub "${ProjectName}-sg-${Environment}"
+
+  # ----------------------------------------------------------------------------
+  # 3. Instancia EC2 com Amazon Linux 2023
+  # ----------------------------------------------------------------------------
+  FoodTimeInstance:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: !Ref InstanceType
+      ImageId: ami-0c101f26f147fa7fd # Amazon Linux 2023 AMI (us-east-1)
+      SecurityGroupIds:
+        - !Ref FoodTimeSecurityGroup
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash
+          dnf update -y
+          dnf install -y nodejs npm git
+          mkdir -p /opt/foodtime
+          cd /opt/foodtime
+          cat << 'EOF' > server.js
+          const http = require('http');
+          const server = http.createServer((req, res) => {
+            res.writeHead(200, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ success: true, data: 'healthy!', service: 'FoodTime CloudFormation' }));
+          });
+          server.listen(${AppPort});
+          EOF
+          node server.js &
+      Tags:
+        - Key: Name
+          Value: !Sub "${ProjectName}-ec2-${Environment}"
+        - Key: Project
+          Value: !Ref ProjectName
+
+  # ----------------------------------------------------------------------------
+  # 4. Alarme CloudWatch para Monitoramento de CPU
+  # ----------------------------------------------------------------------------
+  FoodTimeHighCPUAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: !Sub "${ProjectName}-HighCPUUtilization-${Environment}"
+      AlarmDescription: Alerta quando o consumo de CPU da instancia ultrapassar 80%
+      MetricName: CPUUtilization
+      Namespace: AWS/EC2
+      Statistic: Average
+      Period: 300
+      EvaluationPeriods: 2
+      Threshold: 80
+      ComparisonOperator: GreaterThanThreshold
+      Dimensions:
+        - Name: InstanceId
+          Value: !Ref FoodTimeInstance
+
+Outputs:
+  BucketName:
+    Description: Nome do Bucket S3 gerado pelo CloudFormation
+    Value: !Ref FoodTimeArtifactsBucket
+    Export:
+      Name: !Sub "${ProjectName}-BucketName-${Environment}"
+
+  InstancePublicIp:
+    Description: Endereco IP Publico da instancia EC2
+    Value: !GetAtt FoodTimeInstance.PublicIp
+
+  ApplicationURL:
+    Description: URL de acesso ao FoodTime
+    Value: !Sub "http://${FoodTimeInstance.PublicIp}:${AppPort}"
