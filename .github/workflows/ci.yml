@@ -70,3 +70,4 @@ jobs:
       - name: ✅ Validação da Sintaxe e Recursos (terraform validate)
         working-directory: ./infra/terraform
         run: terraform validate
+

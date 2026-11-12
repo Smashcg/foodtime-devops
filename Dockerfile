@@ -23,3 +23,4 @@ ENV PORT=3000
 
 # Ponto de entrada
 CMD ["node", "server.js"]
+

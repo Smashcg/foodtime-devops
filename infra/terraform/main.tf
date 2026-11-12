@@ -156,3 +156,4 @@ resource "aws_cloudwatch_metric_alarm" "high_cpu_alarm" {
     InstanceId = aws_instance.app_server.id
   }
 }
+

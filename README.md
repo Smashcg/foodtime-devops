@@ -2,7 +2,7 @@
 
 > **Disciplina:** DevOps na Prática (10º Trimestre - PUC Graduação)  
 > **Fase 1:** Configuração e Automação Inicial  
-> **Estudante:** Patrick  
+> **Estudante:** Patrick Pereira Luz  
 
 Este repositório contém a implementação prática da **Fase 1 do Projeto de DevOps**, cobrindo o planejamento técnico, configuração do controle de versão no GitHub, implementação de esteira de Integração Contínua (CI) com GitHub Actions, desenvolvimento de suíte de testes automatizados e provisionamento de Infraestrutura como Código (IaC) com Terraform e AWS CloudFormation.
 
@@ -225,6 +225,7 @@ A aplicação exporta métricas nativas compatíveis com Prometheus na rota `/me
 ---
 
 ## 👤 Autor
-- **Estudante:** Patrick
+- **Estudante:** Patrick Pereira Luz
 - **E-mail:** luzpatrick@gmail.com
 - **Instituição:** Pontifícia Universidade Católica (PUC) - Disciplina de DevOps na Prática
+

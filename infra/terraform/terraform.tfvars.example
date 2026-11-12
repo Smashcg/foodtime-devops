@@ -3,3 +3,4 @@ project_name = "foodtime"
 environment  = "dev"
 instance_type = "t2.micro"
 app_port     = 3000
+

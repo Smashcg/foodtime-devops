@@ -32,3 +32,4 @@ output "cloudwatch_alarm_name" {
   description = "Nome do alarme CloudWatch provisionado"
   value       = aws_cloudwatch_metric_alarm.high_cpu_alarm.alarm_name
 }
+

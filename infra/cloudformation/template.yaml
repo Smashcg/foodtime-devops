@@ -144,3 +144,4 @@ Outputs:
   ApplicationURL:
     Description: URL de acesso ao FoodTime
     Value: !Sub "http://${FoodTimeInstance.PublicIp}:${AppPort}"
+

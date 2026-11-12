@@ -42,7 +42,7 @@ router.get('/api/orders', (req, res) => {
     res.status(200).json({
         success: true,
         orders: [
-            { id: 101, item: 'Hamburguer Artesanal', customer: 'Patrick', status: 'preparando' },
+            { id: 101, item: 'Hamburguer Artesanal', customer: 'Patrick Pereira Luz', status: 'preparando' },
             { id: 102, item: 'Pizza Margherita', customer: 'Lucas', status: 'em entrega' },
             { id: 103, item: 'Salada Ceasar', customer: 'Mariana', status: 'entregue' }
         ]
